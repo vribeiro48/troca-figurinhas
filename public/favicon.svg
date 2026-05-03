@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <!-- Background -->
+  <rect width="100" height="100" rx="14" fill="#0C1B33"/>
+
+  <!-- Trophy cup body -->
+  <path d="M34,11 L66,11 Q71,11 71,16 L67,44 Q62,62 50,65 Q38,62 33,44 L29,16 Q29,11 34,11 Z" fill="#F59E0B"/>
+
+  <!-- Cup shine highlight -->
+  <path d="M39,13 L57,13 Q61,13 62,17 L60,36 Q57,47 50,50 Q46,47 44,41 L41,19 Q40,14 39,13 Z" fill="#FCD34D" opacity="0.35"/>
+
+  <!-- Left handle -->
+  <path d="M34,18 Q13,20 13,37 Q13,52 33,55" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Right handle -->
+  <path d="M66,18 Q87,20 87,37 Q87,52 67,55" fill="none" stroke="#F59E0B" stroke-width="6" stroke-linecap="round"/>
+
+  <!-- Stem -->
+  <rect x="44" y="65" width="12" height="13" fill="#D97706"/>
+
+  <!-- Base -->
+  <rect x="28" y="78" width="44" height="12" rx="4" fill="#F59E0B"/>
+
+  <!-- Base shine -->
+  <rect x="31" y="80" width="38" height="4" rx="2" fill="#FCD34D" opacity="0.35"/>
+</svg>
