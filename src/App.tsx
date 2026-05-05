@@ -1,20 +1,12 @@
-import { useState, useEffect, ChangeEvent } from "react";
+import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Sticker } from "./components/Sticker";
 
-import logo from "./assets/logo.jpg";
+import qrcode from "./assets/qrcode-pix.jpg";
 
 import SortSticker from "./helpers/SortStickers";
 
 import "./styles/main.css";
-
-// const needStickers = [
-//   "QAT1", "QAT2", "ECU2", "SEN3", "NED4", "ENG5", "IRN6", "USA7", "WAL8", "ARG9", "KSA10", "MEX11", "POL12", "FRA13", "AUS14", "DEN15", "TUN16", "ESP17", "CRC18", "BEL19", "JPN20", "GER21", "CAN22", "MAR23", "CRO24", "BRA25", "SRB26", "SUI27", "CMR28", "POR29", "GHA30", "URU31", "KOR32"
-// ]
-
-// const spareStickers = [
-//   "QAT2", "BRA1", "ENG20", "CRC8", "ECU19", "ARG14", "GER2", "POL2"
-// ]
 
 export interface StickerProps {
   id: string;
@@ -48,6 +40,19 @@ function App() {
   const [createStickersToGetText, setCreateStickersToGetText] = useState("");
   const [createStickersToTradeText, setCreateStickersToTradeText] =
     useState("");
+
+  const [showThanks, setShowThanks] = useState(false);
+  const thanksRef = useRef<HTMLDivElement>(null);
+
+  function scrollToThanks() {
+    thanksRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  useEffect(() => {
+    if (showThanks) {
+      scrollToThanks();
+    }
+  }, [showThanks]);
 
   useEffect(() => {
     localStorage.setItem("stickersToGet", JSON.stringify(stickersToGet));
@@ -92,7 +97,7 @@ function App() {
   function receiveSticker(sticker: StickerProps) {
     if (
       !receivingStickers.find(
-        (stickerTofind) => stickerTofind.code === sticker.code,
+        (stickerTofind) => stickerTofind.id === sticker.id,
       )
     ) {
       setReceivingStickers([...receivingStickers, sticker]);
@@ -112,7 +117,7 @@ function App() {
   function unreceiveSticker(stickerToUnreceive: StickerProps) {
     const receivingStickersWithoutPreviousOne = receivingStickers.filter(
       (sticker) => {
-        return sticker.code !== stickerToUnreceive.code;
+        return sticker.id !== stickerToUnreceive.id;
       },
     );
 
@@ -200,20 +205,12 @@ function App() {
   let bgDark: boolean;
 
   return (
-    <div className="max-w-[1400px] mx-auto text-center my-20 px-3">
-      <div className="flex align-center justify-between">
-        <span className="w-32 p-5 hidden sm:block"></span>
-        <h1 className="text-white mx-auto font-bold uppercase m-6 text-2xl">
-          Troca de Figurinhas Panini - Copa 2026
-        </h1>
-        <img
-          src={logo}
-          className="w-32 p-5 mt-[-1rem] hidden sm:block"
-          alt=""
-        />
-      </div>
+    <div className="max-w-[1500px] mx-auto text-center pt-12 pb-8 px-6 sm:px-3 min-h-screen flex flex-col">
+      <h1 className="text-white font-bold uppercase my-2 mx-6 sm:m-6 text-2xl">
+        Trocador de Figurinhas - Álbum Panini Copa 2026
+      </h1>
 
-      <div className="grid lg:grid-cols-3 gap-3">
+      <div className="grid lg:grid-cols-3 gap-6 lg:gap-3 mt-12 mb-16">
         {/* Preciso */}
         <div className="bg-blue-900 min-h-96 rounded-md py-8 px-6 shadow-md shadow-slate-600">
           <div className="flex items-center justify-between">
@@ -333,9 +330,23 @@ function App() {
           <div className="mt-12">
             {receivingStickers.length > 0 || deliveringStickers.length > 0 ? (
               <button
-                className="bg-green-600 buttonTrade py-2 px-4 text-white font-bold rounded shadow-lg shadow-green-600/50 hover:shadow-green-500/50 hover:bg-green-500 transition"
+                className="bg-slate-100 buttonTrade py-2 px-4 text-green-800 font-bold rounded shadow-lg shadow-slate-100/50 hover:bg-white hover:shadow-white/50 transition inline-flex items-center gap-2"
                 onClick={handleTradeStickers}
               >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth={2}
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M7.5 21 3 16.5m0 0L7.5 12M3 16.5h13.5m0-13.5L21 7.5m0 0L16.5 12M21 7.5H7.5"
+                  />
+                </svg>
                 TROCAR
               </button>
             ) : (
@@ -414,6 +425,62 @@ function App() {
           </div>
         </div>
       </div>
+
+      {showThanks && (
+        <div ref={thanksRef} className="fade-in">
+          <p className="text-white text-center mt-12">
+            Este software economizou seu tempo ao trocar figurinhas?
+            <br />
+            Fique à vontade para agradecer com um café (ou ignorar totalmente
+            essa mensagem)
+          </p>
+          <div className="flex justify-center mt-4">
+            <img
+              src={qrcode}
+              onLoad={scrollToThanks}
+              className="w-[60%] sm:w-[35%] lg:w-[13%]"
+              alt=""
+            />
+          </div>
+          <div className="flex justify-center mt-4">
+            <button
+              onClick={() =>
+                navigator.clipboard.writeText(
+                  "00020101021126330014br.gov.bcb.pix0111129243597675204000053039865802BR5922VINICIUS R DE OLIVEIRA6007NITEROI62070503***6304FC39",
+                )
+              }
+              className="bg-green-600 py-2 px-4 text-white font-bold rounded shadow-lg shadow-green-600/50 hover:shadow-green-500/50 hover:bg-green-500 transition"
+            >
+              Copiar QR Code PIX
+            </button>
+          </div>
+          <div className="mb-12" />
+        </div>
+      )}
+      <hr className="mt-auto w-full border-t border-slate-600" />
+      <footer className="text-white text-center mt-6 text-sm">
+        Desenvolvido por Vinicius Ribeiro de Oliveira{" "}
+        <a
+          href="https://www.linkedin.com/in/viniciusribeirodeoliveira/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-blue-400 hover:text-blue-300 underline"
+        >
+          (LinkedIn)
+        </a>
+        <div className="mt-2">
+          <a
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setShowThanks((v) => !v);
+            }}
+            className="text-blue-400 hover:text-blue-300 underline"
+          >
+            Agradecer
+          </a>
+        </div>
+      </footer>
     </div>
   );
 }

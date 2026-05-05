@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+html {
+  scrollbar-gutter: stable;
+}
+
 h2 {
   color: white;
   font-weight: bold;
@@ -15,4 +19,13 @@ button {
 
 .buttonTrade, h1 {
   font-family: 'Inter';
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.fade-in {
+  animation: fadeIn 400ms ease-in;
 }
