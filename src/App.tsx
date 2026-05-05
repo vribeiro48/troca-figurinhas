@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, ChangeEvent } from "react";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { Sticker } from "./components/Sticker";
+import { HowItWorksModal } from "./components/HowItWorksModal";
 
 import qrcode from "./assets/qrcode-pix.jpg";
 
@@ -42,6 +43,7 @@ function App() {
     useState("");
 
   const [showThanks, setShowThanks] = useState(false);
+  const [showHowItWorks, setShowHowItWorks] = useState(false);
   const thanksRef = useRef<HTMLDivElement>(null);
 
   function scrollToThanks() {
@@ -185,6 +187,19 @@ function App() {
       <h1 className="text-white font-bold uppercase my-2 mx-6 sm:m-6 text-2xl">
         Trocador de Figurinhas - Álbum Panini Copa 2026
       </h1>
+      <div>
+        <button
+          onClick={() => setShowHowItWorks(true)}
+          className="text-blue-400 hover:text-blue-300 underline text-sm"
+        >
+          Como funciona?
+        </button>
+      </div>
+
+      <HowItWorksModal
+        open={showHowItWorks}
+        onClose={() => setShowHowItWorks(false)}
+      />
 
       <div className="grid lg:grid-cols-3 gap-6 lg:gap-3 mt-12 mb-16">
         {/* Preciso */}
