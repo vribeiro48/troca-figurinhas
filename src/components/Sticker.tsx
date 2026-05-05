@@ -11,30 +11,26 @@ export interface StickerButtonProps {
 }
 
 export function Sticker({ id, code, variant, bg, onTradeSticker, onUnreceiveSticker, onUndeliverSticker }: StickerButtonProps) {
-  let bgButtonVariant = "bg-blue-500 shadow-blue-500/50 hover:bg-blue-600 hover:shadow-blue-800/50"
+  const variantClasses = variant === "spare"
+    ? "bg-red-500 shadow-red-500/50 hover:bg-red-700 hover:shadow-red-800/50"
+    : "bg-blue-500 shadow-blue-500/50 hover:bg-blue-600 hover:shadow-blue-800/50"
 
-  if (variant == "spare") {
-    bgButtonVariant = "bg-red-500 shadow-red-500/50 hover:bg-red-700 hover:shadow-red-800/50"
-  }
+  const bgClasses = bg
+    ? "bg-yellow-400 shadow-yellow-400/50"
+    : variantClasses
 
   function handleTradeSticker() {
-    if (onTradeSticker) {
-      onTradeSticker({ id, code })
-    }
-
-    if (onUnreceiveSticker) {
-      onUnreceiveSticker({ id, code })
-    }
-
-    if (onUndeliverSticker) {
-      onUndeliverSticker({ id, code })
-    }
+    onTradeSticker?.({ id, code })
+    onUnreceiveSticker?.({ id, code })
+    onUndeliverSticker?.({ id, code })
   }
+
   return (
-    <span>
-      <button onClick={handleTradeSticker} className={`text-white font-bold w-24 text-xl py-2 px-4 rounded shadow-lg transition ${bgButtonVariant} ${bg ? "bg-yellow-400" : ""}`}>
-        {code}
-      </button>
-    </span>
+    <button
+      onClick={handleTradeSticker}
+      className={`text-white font-bold w-24 text-xl py-2 px-4 rounded shadow-lg transition ${bgClasses}`}
+    >
+      {code}
+    </button>
   )
 }

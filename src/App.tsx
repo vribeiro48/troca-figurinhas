@@ -95,60 +95,35 @@ function App() {
       : stickersToTrade;
 
   function receiveSticker(sticker: StickerProps) {
-    if (
-      !receivingStickers.find(
-        (stickerTofind) => stickerTofind.id === sticker.id,
-      )
-    ) {
+    if (!receivingStickers.some((s) => s.id === sticker.id)) {
       setReceivingStickers([...receivingStickers, sticker]);
     }
   }
 
   function deliverSticker(sticker: StickerProps) {
-    if (
-      !deliveringStickers.find(
-        (stickerTofind) => stickerTofind.id === sticker.id,
-      )
-    ) {
+    if (!deliveringStickers.some((s) => s.id === sticker.id)) {
       setDeliveringStickers([...deliveringStickers, sticker]);
     }
   }
 
   function unreceiveSticker(stickerToUnreceive: StickerProps) {
-    const receivingStickersWithoutPreviousOne = receivingStickers.filter(
-      (sticker) => {
-        return sticker.id !== stickerToUnreceive.id;
-      },
+    setReceivingStickers(
+      receivingStickers.filter((s) => s.id !== stickerToUnreceive.id),
     );
-
-    setReceivingStickers(receivingStickersWithoutPreviousOne);
   }
 
   function undeliverSticker(stickerToUndeliver: StickerProps) {
-    const deliveringStickersWithoutPreviousOne = deliveringStickers.filter(
-      (sticker) => {
-        return sticker.id !== stickerToUndeliver.id;
-      },
+    setDeliveringStickers(
+      deliveringStickers.filter((s) => s.id !== stickerToUndeliver.id),
     );
-
-    setDeliveringStickers(deliveringStickersWithoutPreviousOne);
   }
 
   function handleTradeStickers() {
-    const stickersToGetAfterTrade = stickersToGet.filter((sticker) => {
-      return !receivingStickers.find(
-        (stickerTofind) => stickerTofind.id === sticker.id,
-      );
-    });
+    const receivingIds = new Set(receivingStickers.map((s) => s.id));
+    const deliveringIds = new Set(deliveringStickers.map((s) => s.id));
 
-    const spareStickersAfterTrade = stickersToTrade.filter((sticker) => {
-      return !deliveringStickers.find(
-        (stickerTofind) => stickerTofind.id === sticker.id,
-      );
-    });
-
-    setStickersToGet(stickersToGetAfterTrade);
-    setStickersToTrade(spareStickersAfterTrade);
+    setStickersToGet(stickersToGet.filter((s) => !receivingIds.has(s.id)));
+    setStickersToTrade(stickersToTrade.filter((s) => !deliveringIds.has(s.id)));
 
     setReceivingStickers([]);
     setDeliveringStickers([]);
@@ -181,7 +156,7 @@ function App() {
   function handleCreateStickerToGet() {
     if (createStickersToGetText.length > 3) {
       const sticker: StickerProps = {
-        id: Math.random().toString(),
+        id: crypto.randomUUID(),
         code: createStickersToGetText,
       };
 
@@ -193,7 +168,7 @@ function App() {
   function handleCreateStickerToTrade() {
     if (createStickersToTradeText.length > 3) {
       const sticker: StickerProps = {
-        id: Math.random().toString(),
+        id: crypto.randomUUID(),
         code: createStickersToTradeText,
       };
 
@@ -202,7 +177,8 @@ function App() {
     }
   }
 
-  let bgDark: boolean;
+  const receivingIds = new Set(receivingStickers.map((s) => s.id));
+  const deliveringIds = new Set(deliveringStickers.map((s) => s.id));
 
   return (
     <div className="max-w-[1500px] mx-auto text-center pt-12 pb-8 px-6 sm:px-3 min-h-screen flex flex-col">
@@ -247,33 +223,21 @@ function App() {
             />
           </div>
           <div className="flex gap-2 flex-wrap mt-4" ref={animateStickersToGet}>
-            {stickersToGetShown.map((sticker) => {
-              bgDark = false;
-              if (
-                receivingStickers.find(
-                  (stickerTofind) => stickerTofind.id === sticker.id,
-                )
-              ) {
-                bgDark = true;
-              }
-              return (
-                <Sticker
-                  key={sticker.id}
-                  id={sticker.id}
-                  code={sticker.code}
-                  variant="need"
-                  bg={bgDark}
-                  onTradeSticker={receiveSticker}
-                />
-              );
-            })}
+            {stickersToGetShown.map((sticker) => (
+              <Sticker
+                key={sticker.id}
+                id={sticker.id}
+                code={sticker.code}
+                variant="need"
+                bg={receivingIds.has(sticker.id)}
+                onTradeSticker={receiveSticker}
+              />
+            ))}
 
-            {stickersToGetShown.length < 1 ? (
+            {stickersToGetShown.length < 1 && (
               <span className="text-white">
                 Comece adicionando figurinhas que você precisa
               </span>
-            ) : (
-              ""
             )}
           </div>
         </div>
@@ -282,10 +246,8 @@ function App() {
         <div className="bg-green-800 min-h-96 rounded-md py-8 px-6 shadow-md shadow-slate-600">
           <h2>Troca</h2>
           <div className="min-h-24 mt-4">
-            {receivingStickers.length > 0 ? (
+            {receivingStickers.length > 0 && (
               <h2>Recebendo: {receivingStickers.length}</h2>
-            ) : (
-              ""
             )}
             <div
               className="flex gap-2 flex-wrap flex-grow mt-4"
@@ -305,10 +267,8 @@ function App() {
             </div>
           </div>
           <div className="min-h-24 mt-14">
-            {deliveringStickers.length > 0 ? (
+            {deliveringStickers.length > 0 && (
               <h2>Entregando: {deliveringStickers.length}</h2>
-            ) : (
-              ""
             )}
             <div
               className="flex gap-2 flex-wrap mt-4"
@@ -328,7 +288,7 @@ function App() {
             </div>
           </div>
           <div className="mt-12">
-            {receivingStickers.length > 0 || deliveringStickers.length > 0 ? (
+            {(receivingStickers.length > 0 || deliveringStickers.length > 0) && (
               <button
                 className="bg-slate-100 buttonTrade py-2 px-4 text-green-800 font-bold rounded shadow-lg shadow-slate-100/50 hover:bg-white hover:shadow-white/50 transition inline-flex items-center gap-2"
                 onClick={handleTradeStickers}
@@ -349,8 +309,6 @@ function App() {
                 </svg>
                 TROCAR
               </button>
-            ) : (
-              ""
             )}
           </div>
         </div>
@@ -394,33 +352,21 @@ function App() {
             className="flex gap-2 flex-wrap mt-4"
             ref={animateStickersToTrade}
           >
-            {stickersToTradeShown.map((sticker) => {
-              bgDark = false;
-              if (
-                deliveringStickers.find(
-                  (stickerTofind) => stickerTofind.id === sticker.id,
-                )
-              ) {
-                bgDark = true;
-              }
-              return (
-                <Sticker
-                  key={sticker.id}
-                  id={sticker.id}
-                  code={sticker.code}
-                  variant="spare"
-                  bg={bgDark}
-                  onTradeSticker={deliverSticker}
-                />
-              );
-            })}
+            {stickersToTradeShown.map((sticker) => (
+              <Sticker
+                key={sticker.id}
+                id={sticker.id}
+                code={sticker.code}
+                variant="spare"
+                bg={deliveringIds.has(sticker.id)}
+                onTradeSticker={deliverSticker}
+              />
+            ))}
 
-            {stickersToTradeShown.length < 1 ? (
+            {stickersToTradeShown.length < 1 && (
               <span className="text-white">
                 Comece adicionando figurinhas que você quer trocar
               </span>
-            ) : (
-              ""
             )}
           </div>
         </div>
